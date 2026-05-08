@@ -91,6 +91,7 @@ router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os em
         status: true,
         operador: {
           select: {
+            cpf: true,
             setor: true,
             usuario: {
               select: {
@@ -101,6 +102,7 @@ router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os em
         },
         ferramenta: {
           select: {
+            id: true,
             tipo: true
         }
       }
@@ -114,6 +116,8 @@ router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os em
       setor_operador: emp.operador.setor,
       nome_operador: emp.operador.usuario.nome,
       tipo_ferramenta: emp.ferramenta.tipo,
+      operador_cpf: emp.operador.cpf, 
+      ferramenta_id: emp.ferramenta.id
   }));
   
     res.json(empMapeado);
