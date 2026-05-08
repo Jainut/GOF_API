@@ -124,7 +124,7 @@ router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os em
 
 router.get('/listar/Devolucoes', async (req,res) => { // Rota pra listar devoluções, topzera
   try {
-    const devolucoes = await prisma.devolucao.findMany({
+    const devolucoes = await prisma.devolucao.findMany({ // Inferno de aninhamento 
       select: {
         id: true,
         emprestimo_id: true,
