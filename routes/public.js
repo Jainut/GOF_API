@@ -44,26 +44,6 @@ router.post('/registrar/Devolucao', async (req, res) => {
   }
 });
 
-router.post('/registrar/Operador', async (req, res) => { // Rota de registro de operador, sem muita ideinha
-  const operador = req.body;
-
-  try {
-    const newoperador = await prisma.operador.create({
-      data: {
-        cpf: operador.cpf,
-        setor: operador.setor,
-        senha: await bcrypt.hash(operador.senha, 10),
-        }
-    });
-
-    return res.status(201).json({ message: 'Operador registrado com sucesso' });
-
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Erro ao registrar operador' });
-  }
-});
-
 router.post('/registrar/Usuario', async (req, res) => { // Rota de registro de usuário porque nós é bom mai num é bombom
   const usuario = req.body;
 
