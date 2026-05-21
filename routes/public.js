@@ -53,6 +53,8 @@ router.post('/registrar/Usuario', async (req, res) => { // Rota de registro de u
         cpf: usuario.cpf,
         nome: usuario.nome,
         tipo: usuario.tipo,
+        setor: usuario.setor,
+        senha: await bcrypt.hash(usuario.senha, 10)
       }
     });
 
