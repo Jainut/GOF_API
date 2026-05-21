@@ -11,7 +11,7 @@ router.post('/registrar/Emprestimo', async (req, res) => { // Rota pra registrar
   try { // Vai tentar, se der ruim, cai no catch
     const newEmprestimo = await prisma.emprestimo.create({ // Olha que maravilha a API mandando só o basico fi
       data: {
-      operador_cpf: emprestimo.operador_cpf,
+      user_cpf: emprestimo.user_cpf,
       ferramenta_id: emprestimo.ferramenta_id,
       status: 'Emprestado', // Aqui a gente já marca como emprestado, porque é isso que tá acontecendo
       }
@@ -30,7 +30,7 @@ router.post('/registrar/Devolucao', async (req, res) => {
   try { // Vai tentar, se der ruim, cai no catch
     const newDevolucao = await prisma.devolucao.create({
       data: {
-      operador_cpf: devolucao.operador_cpf,
+      user_cpf: devolucao.user_cpf,
       emprestimo_id: devolucao.emprestimo_id,
       ferramenta_id: devolucao.ferramenta_id,
       status: 'Devolvido', // Aqui a gente já marca como devolvido, porque é isso que tá acontecendo
@@ -73,15 +73,11 @@ router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os em
         id: true,
         data_retirada: true,
         status: true,
-        operador: {
+        usuario: {
           select: {
-            cpf: true,
+            nome: true,
+            tipo: true,
             setor: true,
-            usuario: {
-              select: {
-                nome: true
-              }
-            }
           }
         },
         ferramenta: {
@@ -97,10 +93,10 @@ router.get('/listar/Emprestimos', async (req, res) => { // Rota pra listar os em
       emprestimo_id: emp.id,
       data_retirada: emp.data_retirada,
       ferramenta_status: emp.status,
-      setor_operador: emp.operador.setor,
-      nome_operador: emp.operador.usuario.nome,
+      setor_usuario: emp.usuario.setor,
+      nome_usuario: emp.usuario.nome,
+      tipo_usuario: emp.usuario.tipo,
       tipo_ferramenta: emp.ferramenta.tipo,
-      operador_cpf: emp.operador.cpf, 
       ferramenta_id: emp.ferramenta.id
   }));
   
@@ -118,14 +114,11 @@ router.get('/listar/Devolucoes', async (req,res) => { // Rota pra listar devolu�
         emprestimo_id: true,
         status: true,
         data_devolucao: true,
-        operador: {
+        usuario: {
           select: {
+          nome: true,
+          tipo: true,
           setor: true,
-            usuario: {
-              select: {
-                nome: true
-              }
-            }
           }
         },
         ferramenta: {
@@ -142,8 +135,9 @@ router.get('/listar/Devolucoes', async (req,res) => { // Rota pra listar devolu�
       status: dev.status,
       data_devolucao: dev.data_devolucao,
       tipo_ferramenta: dev.ferramenta.tipo,
-      setor_operador: dev.operador.setor,
-      nome_operador: dev.operador.usuario.nome,
+      setor_usuario: dev.usuario.setor,
+      nome_usuario: dev.usuario.nome,
+      tipo_usuario: dev.usuario.tipo
     }));
 
     res.json(devMapeado);
@@ -165,7 +159,9 @@ router.post('/login', async (req, res) => { // Rota de login, porque a gente pre
       return res.status(404).json({ message: 'Usuário não encontrado' });
     }
 
-    if (user.senha !== userInfo.senha) {
+    const isMatch = await bcrypt.compare(userInfo.senha, user.senha); // Comparando a senha fornecida com a senha hasheada no banco
+
+    if (!isMatch) {
       return res.status(401).json({ message: 'Senha incorreta' });
     }
 
