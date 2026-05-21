@@ -85,9 +85,9 @@ model sensor {
 model usuario {
   cpf             String           @id @db.VarChar(11)
   nome            String           @db.VarChar(100)
-  tipo            String
+  tipo            USERS_ROLE
   senha           String?
-  setor           String?
+  setor           SETORES?
   cartao_operador cartao_operador?
   devolucao       devolucao[]
   emprestimo      emprestimo[]
