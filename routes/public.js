@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'; // Importando o Prisma Client pra falar com o banco de dados
 import express from 'express'; // Importando a tal da bibliotaca principal
+import bcrypt from 'bcrypt'; // Dar aquelas hasheada de leve
 
 const router = express.Router(); // Usando só o básico pra criar rota mesmo
 const prisma = new PrismaClient(); // Criando uma instância do Prisma Client pra usar depois
@@ -51,6 +52,7 @@ router.post('/registrar/Operador', async (req, res) => { // Rota de registro de 
       data: {
         cpf: operador.cpf,
         setor: operador.setor,
+        senha: await bcrypt.hash(operador.senha, 10),
         }
     });
 
@@ -166,6 +168,29 @@ router.get('/listar/Devolucoes', async (req,res) => { // Rota pra listar devolu�
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Erro ao listar devoluções'});
+  }
+});
+
+router.post('/login', async (req, res) => { // Rota de login, porque a gente precisa de segurança né
+  const userInfo = req.body;
+
+  try {
+    const user = await prisma.usuario.findUnique({
+      where: { cpf: userInfo.cpf },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    if (user.senha !== userInfo.senha) {
+      return res.status(401).json({ message: 'Senha incorreta' });
+    }
+
+    return res.status(200).json({ message: 'Login realizado com sucesso'});
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro ao realizar login' });
   }
 });
 
