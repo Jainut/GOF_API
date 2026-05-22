@@ -1,10 +1,12 @@
 import express from 'express'; // Importando a tal da bibliotaca principal
 import { PrismaClient } from '@prisma/client'; // Importando o Prisma Client pra usar o banco de dados, porque a gente é moderno e usa ORM
 
+import auth from '../middleware/auth.js';
+
 const router = express.Router(); 
 const prisma = new PrismaClient(); 
 
-router.post('/registrar/Emprestimo', autenticar, async (req, res) => {
+router.post('/registrar/Emprestimo', auth, async (req, res) => {
   const emprestimo = req.body;
 
   try {
@@ -29,7 +31,7 @@ router.post('/registrar/Emprestimo', autenticar, async (req, res) => {
   }
 });
 
-router.post('/registrar/Devolucao', autenticar, async (req, res) => {
+router.post('/registrar/Devolucao', auth, async (req, res) => {
   const devolucao = req.body;
 
   try {
@@ -55,7 +57,7 @@ router.post('/registrar/Devolucao', autenticar, async (req, res) => {
   }
 });
 
-router.get('/listar/Emprestimos', autenticar, async (req, res) => {
+router.get('/listar/Emprestimos', auth, async (req, res) => {
   try {
     const emprestimos = await prisma.emprestimo.findMany({
       select: {
@@ -100,7 +102,7 @@ router.get('/listar/Emprestimos', autenticar, async (req, res) => {
   }
 });
 
-router.get('/listar/Devolucoes', autenticar, async (req, res) => {
+router.get('/listar/Devolucoes', auth, async (req, res) => {
   try {
     const devolucoes = await prisma.devolucao.findMany({
       select: {
@@ -190,3 +192,5 @@ return res.status(200).json({
   message: 'Login realizado com sucesso',
   token
 });
+
+export default router;
