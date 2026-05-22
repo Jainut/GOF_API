@@ -47,6 +47,10 @@ router.post('/registrar/Devolucao', async (req, res) => {
 router.post('/registrar/Usuario', async (req, res) => { // Rota de registro de usuário porque nós é bom mai num é bombom
   const usuario = req.body;
 
+  const salt = await bcrypt.genSalt(10); // Gerando um salt pra hashear a senha, porque segurança é importante mesmo que seja só um projeto do senai né lobato
+
+  const hashedPassword = await bcrypt.hash(usuario.senha, salt); // Hasheando a senha do usuário com o salt gerado, porque a gente não quer senha em texto puro no banco de dados né lobato
+
   try {
     const newUsuario = await prisma.usuario.create({
       data: {
