@@ -4,9 +4,15 @@ ts API is for my final project (AKA TCC)
 
 ## Routes
 
+### Publics
+
+- /registrar/Usuario
+- /login
+
+### Privates
+
 - /registrar/Emprestimo
 - /registrar/Devolucao
-- /registrar/Usuario
 - /listar/Emprestimos
 - /listar/Devolucoes
 
@@ -16,6 +22,8 @@ ts API is for my final project (AKA TCC)
 - Node
 - Express
 - Prisma
+- JWT Tokens
+- Bcrypt
 
 ## Obs
 
