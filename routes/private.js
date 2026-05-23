@@ -1,7 +1,7 @@
 import express from 'express'; // Importando a tal da bibliotaca principal
 import { PrismaClient } from '@prisma/client'; // Importando o Prisma Client pra usar o banco de dados, porque a gente é moderno e usa ORM
 
-import auth from '../middleware/auth.js';
+import auth from '../middlewares/auth.js';
 
 const router = express.Router(); 
 const prisma = new PrismaClient(); 
@@ -175,22 +175,5 @@ export function autenticar(req, res, next) {
     });
   }
 }
-
-const token = jwt.sign(
-  {
-    cpf: user.cpf,
-    nome: user.nome,
-    tipo: user.tipo
-  },
-  JWT_SECRET,
-  {
-    expiresIn: '1h'
-  }
-);
-
-return res.status(200).json({
-  message: 'Login realizado com sucesso',
-  token
-});
 
 export default router;

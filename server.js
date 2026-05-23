@@ -3,7 +3,7 @@ import cors from "cors";
 import publicRouter from "./routes/public.js"; // Importando é tudo fi
 import privateRouter from "./routes/private.js"
 
-import auth from "./middlewares./auth.js"
+import auth from "./middlewares/auth.js"
 const app = express(); // Usando o express todinho
 const PORT = process.env.PORT || 3000;
 
