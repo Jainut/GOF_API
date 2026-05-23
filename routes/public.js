@@ -2,6 +2,10 @@ import { PrismaClient } from '@prisma/client'; // Importando o Prisma Client pra
 import express from 'express'; // Importando a tal da bibliotaca principal
 import bcrypt from 'bcrypt'; // Dar aquelas hasheada de leve
 
+import jwt from 'jsonwebtoken'; // Pra criar token de login, porque segurança é importante mesmo que seja só um projeto do senai né lobato
+
+const JWT_SECRET = priscess.env.JSWT_SECRET ; // Pegando a chave secreta do ambiente, ou usando uma padrão se não tiver, porque segurança é importante mesmo que seja só um projeto do senai né lobato
+
 const router = express.Router(); // Usando só o básico pra criar rota mesmo
 const prisma = new PrismaClient(); // Criando uma instância do Prisma Client pra usar depois
 
@@ -47,6 +51,10 @@ router.post('/registrar/Devolucao', async (req, res) => {
 router.post('/registrar/Usuario', async (req, res) => { // Rota de registro de usuário porque nós é bom mai num é bombom
   const usuario = req.body;
 
+  const salt = await bcrypt.genSalt(10); // Gerando um salt pra hashear a senha, porque segurança é importante mesmo que seja só um projeto do senai né lobato
+
+  const hashedPassword = await bcrypt.hash(usuario.senha, salt); // Hasheando a senha do usuário com o salt gerado, porque a gente não quer senha em texto puro no banco de dados né lobato
+
   try {
     const newUsuario = await prisma.usuario.create({
       data: {
@@ -54,7 +62,7 @@ router.post('/registrar/Usuario', async (req, res) => { // Rota de registro de u
         nome: usuario.nome,
         tipo: usuario.tipo,
         setor: usuario.setor,
-        senha: await bcrypt.hash(usuario.senha, 10)
+        senha: hashedPassword, // Guardando a senha hasheada no banco de dados, porque a gente é responsável e não quer deixar senha em texto puro por aí né lobato
       }
     });
 
@@ -164,6 +172,9 @@ router.post('/login', async (req, res) => { // Rota de login, porque a gente pre
     if (!isMatch) {
       return res.status(401).json({ message: 'Senha incorreta' });
     }
+
+    // Gerar o token JWT
+    const token = jwt.sign({ cpf: user.cpf, nome: user.nome, tipo: user.tipo }, JWT_SECRET, { expiresIn: '1h' }); // Criando um token com as informações do usuário e a chave secreta, expira em 1 hora
 
     return res.status(200).json({ message: 'Login realizado com sucesso'});
   } catch (error) {
