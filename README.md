@@ -1,6 +1,6 @@
-# Another API btw
+# GOF Team API - Tool traceability 4.0 project
 
-ts API is for my final project (AKA TCC)
+GOF Team API is a backend system developed for the Tool Traceability 4.0 project. Its main purpose is to manage tool loans and returns inside an industrial environment, using role-based authentication and secure data handling.
 
 ## Routes
 
