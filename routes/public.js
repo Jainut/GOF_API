@@ -175,3 +175,4 @@ router.post('/login', async (req, res) => { // Rota de login, porque a gente pre
 export default router; // Exportando as rotas, porque nós precisa usar depois
 
 // OBS: Mais umas 200 linhas eu não vou mais tar entendendo como essa bomba tá rodando
+// OBS2: Não deu nem 200 linhas ainda e já não sei como isso tá rodando tamo juntooooooooooooooooo
