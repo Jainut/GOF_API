@@ -27,4 +27,4 @@ ts API is for my final project (AKA TCC)
 
 ## Obs
 
-If you want to download this project (i honestly doubt you do), just run: 'git clone https://github.com/Jainut/visalayAPI.git'
+If you want to download this project (i honestly doubt you do), just run: 'git clone https://github.com/Jainut/GOF_API.git'
