@@ -63,6 +63,28 @@ router.post('/login', async (req, res) => { // Rota de login, porque a gente pre
   }
 });
 
+router.post('/login/NFC', async (req, res) => {
+  const nfcInfo = req.body;
+
+  try {
+    const user = await prisma.cartao_operador.findUnique({
+      where: { codigo_uid: nfcInfo.codigo_uid },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Gerar o token JWT
+    const token = jwt.sign({ cpf: user.cpf, nome: user.nome, tipo: user.tipo }, JWT_SECRET, { expiresIn: '600s' });
+
+    return res.status(200).json({ message: 'Usuário autenticado com sucesso', token });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro ao validar usuário, UID não encontrado' });
+  }
+});
+
 export default router; // Exportando as rotas, porque nós precisa usar depois
 
 // OBS: Mais umas 200 linhas eu não vou mais tar entendendo como essa bomba tá rodando
