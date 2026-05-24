@@ -67,16 +67,16 @@ router.post('/login/NFC', async (req, res) => {
   const nfcInfo = req.body;
 
   try {
-    const user = await prisma.cartao_operador.findUnique({
+    const cartao_operador = await prisma.cartao_operador.findUnique({
       where: { codigo_uid: nfcInfo.uid },
     });
 
-    if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
+    if (!cartao_operador) {
+      return res.status(404).json({ message: 'Cartão não encontrado' });
     }
 
     // Gerar o token JWT
-    const token = jwt.sign({ cpf: user.cpf, nome: user.nome, tipo: user.tipo }, JWT_SECRET, { expiresIn: '600s' });
+    const token = jwt.sign({ id: cartao_operador.id, codigo_uid: cartao_operador.codigo_uid, user_cpf: cartao_operador.user_cpf }, JWT_SECRET, { expiresIn: '600s' });
 
     return res.status(200).json({ message: 'Usuário autenticado com sucesso', token });
   } catch (error) {
