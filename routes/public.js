@@ -68,7 +68,7 @@ router.post('/login/NFC', async (req, res) => {
 
   try {
     const user = await prisma.cartao_operador.findUnique({
-      where: { codigo_uid: nfcInfo.codigo_uid },
+      where: { codigo_uid: nfcInfo.uid },
     });
 
     if (!user) {
