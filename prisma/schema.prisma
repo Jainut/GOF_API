@@ -47,7 +47,6 @@ model ferramenta {
   id                 Int                  @id @default(autoincrement())
   tipo               String               @db.VarChar(50)
   cartao_ferramenta  cartao_ferramenta[]
-  devolucao          devolucao[]
   ferramenta_estoque ferramenta_estoque[]
   item_emprestimo    item_emprestimo[]
 }
@@ -95,15 +94,13 @@ model usuario {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model devolucao {
-  id             Int         @id @default(autoincrement())
-  user_cpf       String      @db.VarChar(11)
-  emprestimo_id  Int         @unique
-  status         String?     @db.VarChar(20)
-  data_devolucao DateTime?   @default(now()) @db.Timestamp(6)
-  ferramenta_id  Int?
-  emprestimo     emprestimo  @relation(fields: [emprestimo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ferramenta     ferramenta? @relation(fields: [ferramenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  usuario        usuario     @relation(fields: [user_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction)
+  id             Int        @id @default(autoincrement())
+  user_cpf       String     @db.VarChar(11)
+  emprestimo_id  Int        @unique
+  status         String?    @db.VarChar(20)
+  data_devolucao DateTime?  @default(now()) @db.Timestamp(6)
+  emprestimo     emprestimo @relation(fields: [emprestimo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuario        usuario    @relation(fields: [user_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

@@ -40,16 +40,20 @@ router.post('/registrar/Emprestimo', auth, async (req, res) => {
 });
 
 router.post('/registrar/Devolucao', auth, async (req, res) => {
-  const devolucao = req.body;
+  const {emprestimo_id, user_cpf} = req.body;
 
   try {
     await prisma.devolucao.create({
       data: {
-        user_cpf: devolucao.user_cpf,
-        emprestimo_id: devolucao.emprestimo_id,
-        ferramenta_id: devolucao.ferramenta_id,
+        user_cpf: user_cpf,
+        emprestimo_id: emprestimo_id,
         status: 'Devolvido'
       }
+    });
+
+    await prisma.emprestimo.update({
+      where: { id: emprestimo_id },
+      data: { status: 'Devolvido' }
     });
 
     return res.status(201).json({
