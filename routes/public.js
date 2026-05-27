@@ -71,13 +71,17 @@ router.post('/login/NFC', async (req, res) => {
       where: { codigo_uid: nfcInfo.uid },
     });
 
+    if (!cartao_operador) {
+      return res.status(404).json({ message: 'Cartão NFC não encontrado' });
+    }
+
     // Gerar o token JWT
     const token = jwt.sign({ codigo_id: cartao_operador.codigo_uid}, JWT_SECRET, { expiresIn: '600s' });
 
     return res.status(200).json({ message: 'Usuário autenticado com sucesso', token });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Erro ao validar usuário, UID não encontrado' });
+    return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 });
 
