@@ -68,10 +68,7 @@ router.post('/registrar/Devolucao', auth, async (req, res) => {
 router.get('/listar/Emprestimos', auth, async (req, res) => {
   try {
     const emprestimos = await prisma.emprestimo.findMany({
-      select: {
-        id: true,
-        data_retirada: true,
-        status: true,
+      include: {
         usuario: {
           select: {
             nome: true,
@@ -79,10 +76,13 @@ router.get('/listar/Emprestimos', auth, async (req, res) => {
             setor: true
           }
         },
-        ferramenta: {
-          select: {
-            id: true,
-            tipo: true
+        item_emprestimo: {
+          include: {
+            ferramenta: {
+              select: {
+                tipo: true
+              }
+            }
           }
         }
       }
@@ -92,11 +92,18 @@ router.get('/listar/Emprestimos', auth, async (req, res) => {
       emprestimo_id: emp.id,
       data_retirada: emp.data_retirada,
       ferramenta_status: emp.status,
-      setor_usuario: emp.usuario.setor,
+
+      usuario: {
       nome_usuario: emp.usuario.nome,
-      tipo_usuario: emp.usuario.tipo,
-      tipo_ferramenta: emp.ferramenta.tipo,
-      ferramenta_id: emp.ferramenta.id
+      setor_usuario: emp.usuario.setor,
+      tipo_usuario: emp.usuario.tipo
+      },
+
+      ferramentas: emp.item_emprestimo.map(item => ({
+        ferramenta_id: item.ferramenta.id,
+        tipo_ferramenta: item.ferramenta.tipo,
+        quantidade: item.quantidade
+      }))
     }));
 
     res.json(empMapeado);
