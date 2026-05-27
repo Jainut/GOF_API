@@ -64,24 +64,55 @@ router.post('/login', async (req, res) => { // Rota de login, porque a gente pre
 });
 
 router.post('/login/NFC', async (req, res) => {
-  const nfcInfo = req.body;
-
   try {
+
+    console.log("BODY RECEBIDO:");
+    console.log(req.body);
+
+    const nfcInfo = req.body;
+
     const cartao_operador = await prisma.cartao_operador.findFirst({
-      where: { codigo_uid: nfcInfo.uid },
+      where: {
+        codigo_uid: nfcInfo.uid
+      }
     });
 
+    console.log("RESULTADO DO BANCO:");
+    console.log(cartao_operador);
+
     if (!cartao_operador) {
-      return res.status(404).json({ message: 'Cartão NFC não encontrado' });
+      return res.status(404).json({
+        message: "UID não encontrado"
+      });
     }
 
-    // Gerar o token JWT
-    const token = jwt.sign({ codigo_id: cartao_operador.codigo_uid}, JWT_SECRET, { expiresIn: '600s' });
+    console.log("JWT_SECRET:");
+    console.log(JWT_SECRET);
 
-    return res.status(200).json({ message: 'Usuário autenticado com sucesso', token });
+    const token = jwt.sign(
+      {
+        codigo_id: cartao_operador.codigo_uid
+      },
+      JWT_SECRET,
+      {
+        expiresIn: '600s'
+      }
+    );
+
+    return res.status(200).json({
+      message: "Usuário autenticado com sucesso",
+      token
+    });
+
   } catch (error) {
+
+    console.error("ERRO COMPLETO:");
     console.error(error);
-    return res.status(500).json({ message: 'Erro interno do servidor' });
+
+    return res.status(500).json({
+      message: "Erro interno do servidor",
+      erro: error.message
+    });
   }
 });
 
