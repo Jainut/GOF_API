@@ -10,9 +10,9 @@ router.post('/registrar/Emprestimo', auth, async (req, res) => {
   const {user_cpf, ferramentas} = req.body;
 
   try {
-    const emprestimo =await prisma.emprestimo.create({
+    const emprestimo = await prisma.emprestimo.create({
       data: {
-        user_cpf: emprestimo.user_cpf,
+        user_cpf: user_cpf,
         status: 'Emprestado'
       }
     });

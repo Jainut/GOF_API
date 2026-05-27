@@ -108,12 +108,12 @@ model devolucao {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model item_emprestimo {
-  id            BigInt      @id @default(autoincrement())
-  emprestimo_id Int?
-  ferramenta_id Int?
-  quantidade    Int?        @db.SmallInt
-  emprestimo    emprestimo? @relation(fields: [emprestimo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ferramenta    ferramenta? @relation(fields: [ferramenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id            BigInt     @id @default(autoincrement())
+  emprestimo_id Int
+  ferramenta_id Int
+  quantidade    Int        @db.SmallInt
+  emprestimo    emprestimo @relation(fields: [emprestimo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ferramenta    ferramenta @relation(fields: [ferramenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum SETORES {
