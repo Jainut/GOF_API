@@ -28,14 +28,15 @@ model cartao_operador {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model emprestimo {
-  id            Int        @id @default(autoincrement())
-  user_cpf      String     @db.VarChar(11)
-  ferramenta_id Int
-  data_retirada DateTime?  @default(now()) @db.Timestamp(6)
-  status        String?    @db.VarChar(20)
-  devolucao     devolucao?
-  ferramenta    ferramenta @relation(fields: [ferramenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  usuario       usuario    @relation(fields: [user_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction)
+  id              Int               @id @default(autoincrement())
+  user_cpf        String            @db.VarChar(11)
+  ferramenta_id   Int
+  data_retirada   DateTime?         @default(now()) @db.Timestamp(6)
+  status          String?           @db.VarChar(20)
+  devolucao       devolucao?
+  ferramenta      ferramenta        @relation(fields: [ferramenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuario         usuario           @relation(fields: [user_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction)
+  item_emprestimo item_emprestimo[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -51,6 +52,7 @@ model ferramenta {
   devolucao          devolucao[]
   emprestimo         emprestimo[]
   ferramenta_estoque ferramenta_estoque[]
+  item_emprestimo    item_emprestimo[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -105,6 +107,16 @@ model devolucao {
   emprestimo     emprestimo  @relation(fields: [emprestimo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   ferramenta     ferramenta? @relation(fields: [ferramenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   usuario        usuario     @relation(fields: [user_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model item_emprestimo {
+  id            BigInt      @id @default(autoincrement())
+  emprestimo_id Int?
+  ferramenta_id Int?
+  quantidade    Int?        @db.SmallInt
+  emprestimo    emprestimo? @relation(fields: [emprestimo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ferramenta    ferramenta? @relation(fields: [ferramenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum SETORES {

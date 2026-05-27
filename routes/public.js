@@ -78,7 +78,7 @@ router.post('/login/NFC', async (req, res) => {
     // Gerar o token JWT
     const token = jwt.sign({ codigo_id: cartao_operador.codigo_uid}, JWT_SECRET, { expiresIn: '600s' });
 
-    return res.status(200).json({ message: 'Usuário autenticado com sucesso', token });
+    return res.status(200).json({ message: 'Usuário autenticado com sucesso', token, operador: cartao_operador.user_cpf, codigo_uid: cartao_operador.codigo_uid });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Erro interno do servidor' });
