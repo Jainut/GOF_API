@@ -30,11 +30,9 @@ model cartao_operador {
 model emprestimo {
   id              Int               @id @default(autoincrement())
   user_cpf        String            @db.VarChar(11)
-  ferramenta_id   Int
   data_retirada   DateTime?         @default(now()) @db.Timestamp(6)
   status          String?           @db.VarChar(20)
   devolucao       devolucao?
-  ferramenta      ferramenta        @relation(fields: [ferramenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   usuario         usuario           @relation(fields: [user_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction)
   item_emprestimo item_emprestimo[]
 }
@@ -50,7 +48,6 @@ model ferramenta {
   tipo               String               @db.VarChar(50)
   cartao_ferramenta  cartao_ferramenta[]
   devolucao          devolucao[]
-  emprestimo         emprestimo[]
   ferramenta_estoque ferramenta_estoque[]
   item_emprestimo    item_emprestimo[]
 }

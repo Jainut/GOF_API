@@ -7,19 +7,27 @@ const router = express.Router();
 const prisma = new PrismaClient(); 
 
 router.post('/registrar/Emprestimo', auth, async (req, res) => {
-  const emprestimo = req.body;
+  const {user_cpf, ferramentas} = req.body;
 
   try {
-    await prisma.emprestimo.create({
+    const emprestimo =await prisma.emprestimo.create({
       data: {
         user_cpf: emprestimo.user_cpf,
-        ferramenta_id: emprestimo.ferramenta_id,
         status: 'Emprestado'
       }
     });
 
+    await prisma.item_emprestimo.createMany({
+      data: ferramentas.map(item => ({
+        emprestimo_id: emprestimo.id,
+        ferramenta_id: item.ferramenta_id,
+        quantidade: item.quantidade
+      }))
+    });
+
     return res.status(201).json({
-      message: 'Empréstimo registrado com sucesso'
+      message: 'Empréstimo registrado com sucesso',
+      emprestimo_id: emprestimo.id
     });
 
   } catch (error) {
