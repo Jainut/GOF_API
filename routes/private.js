@@ -166,6 +166,27 @@ router.get('/listar/Devolucoes', auth, async (req, res) => {
   }
 });
 
+router.get('/listar/Ferramentas', auth, async (req, res) => {
+  try {
+    const ferramentas = await prisma.ferramenta.findMany({
+      include: {
+        ferramenta_estoque: {
+          select: {
+            quantidade: true
+          }
+        }
+      }
+    });
+
+    res.json(ferramentas);
+
+  } catch (error) {
+    res.status(500).json({
+      message: 'Erro ao listar ferramentas'
+    });
+  }
+});
+
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET;
