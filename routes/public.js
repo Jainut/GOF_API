@@ -85,7 +85,7 @@ router.post('/login/NFC', async (req, res) => {
   }
 });
 
-router.get('/listar/Ativos', auth, async (req, res) => {
+router.get('/listar/Ativos', async (req, res) => {
   try {
   const emprestimosAbertos = await prisma.emprestimo.findMany({
 
