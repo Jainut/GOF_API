@@ -85,6 +85,40 @@ router.post('/login/NFC', async (req, res) => {
   }
 });
 
+router.get('/listar/Ativos', auth, async (req, res) => {
+  try {
+  const emprestimosAbertos = await prisma.emprestimo.findMany({
+
+  where: {
+    devolucao: null
+  },
+
+  include: {
+
+    usuario: true,
+
+    item_emprestimo: {
+
+      include: {
+        ferramenta: true
+      }
+
+    }
+
+  }
+
+})
+  res.json(emprestimosAbertos);
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Erro ao listar ativos'
+    });
+  }
+});
+
 export default router; // Exportando as rotas, porque nós precisa usar depois
 
 // OBS: Mais umas 200 linhas eu não vou mais tar entendendo como essa bomba tá rodando

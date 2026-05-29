@@ -97,7 +97,7 @@ model devolucao {
   id             Int        @id @default(autoincrement())
   user_cpf       String     @db.VarChar(11)
   emprestimo_id  Int        @unique
-  status         String?    @db.VarChar(20)
+  status         String?
   data_devolucao DateTime?  @default(now()) @db.Timestamp(6)
   emprestimo     emprestimo @relation(fields: [emprestimo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   usuario        usuario    @relation(fields: [user_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction)
@@ -105,7 +105,7 @@ model devolucao {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model item_emprestimo {
-  id            BigInt     @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   emprestimo_id Int
   ferramenta_id Int
   quantidade    Int        @db.SmallInt
