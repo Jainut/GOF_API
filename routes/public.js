@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'; // Importando o Prisma Client pra falar com o banco de dados
 import express from 'express'; // Importando a tal da bibliotaca principal
 import bcrypt from 'bcrypt'; // Dar aquelas hasheada de leve
+import {autenticarNFC} from "../services/nfcAuth.js"; // Importando a funlção pra autenticar NFC
 
 import jwt from 'jsonwebtoken'; // Pra criar token de login, porque segurança é importante mesmo que seja só um projeto do senai né lobato
 
@@ -67,18 +68,15 @@ router.post('/login/NFC', async (req, res) => {
   const nfcInfo = req.body;
 
   try {
-    const cartao_operador = await prisma.cartao_operador.findFirst({
-      where: { codigo_uid: nfcInfo.uid },
-    });
+    const resultado = await autenticarNFC(nfcInfo.uid); // Chamando a função de autenticação NFC, que vai verificar o cartão e gerar um token se for válido
 
-    if (!cartao_operador) {
-      return res.status(404).json({ message: 'Cartão NFC não encontrado' });
+    if (!resultado) {
+      return res.status(401).json({ message: 'Cartão NFC inválido'});
     }
 
-    // Gerar o token JWT
-    const token = jwt.sign({ codigo_id: cartao_operador.codigo_uid}, JWT_SECRET, { expiresIn: '600s' });
+    res.cookie('token', resultado.token, { httpOnly: true, sameSite: 'lax', maxAge: 10*60*1000 }); // Guardando o token nos cookies ao invés de local storage
 
-    return res.status(200).json({ message: 'Usuário autenticado com sucesso', token, operador: cartao_operador.user_cpf, codigo_uid: cartao_operador.codigo_uid });
+    return res.status(200).json({ message: 'Usuário autenticado com sucesso' });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Erro interno do servidor' });
