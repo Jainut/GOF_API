@@ -5,6 +5,10 @@ import { Server } from "socket.io";
 import publicRouter from "./routes/public.js"; // Importando é tudo fi
 import privateRouter from "./routes/private.js"
 import iniciarMQTT from "./mqttHandler.js";
+import { useEffect, useState } from 'react';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3000', { withCredentials: true });
 
 import auth from "./middlewares/auth.js"
 
@@ -38,6 +42,6 @@ app.get('/', (req, res) => {
     res.json({ message: 'Rodando...' });
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Ts is running, le'go 🖥️`); // Mostrando que ts (não é this shit eu juro) tá rodando e le'go né
 });
