@@ -4,7 +4,7 @@ import http from "http";
 import { Server } from "socket.io";
 import publicRouter from "./routes/public.js"; // Importando é tudo fi
 import privateRouter from "./routes/private.js"
-import iniciarMQTT from "./mqttHandler.js";
+import iniciarMQTT from "./mqtthandler.js";
 
 import auth from "./middlewares/auth.js"
 
