@@ -221,6 +221,12 @@ router.get('/listar/Ativos', auth, async (req, res) => {
   }
 });
 
+const normalizarUid = (valor) =>
+  String(valor ?? '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
+
 router.get('/buscar/Usuario/:uid', auth, async (req, res) => {
   const { uid } = req.params;
   const uidNormalizado = normalizarUid(uid);

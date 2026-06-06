@@ -11,6 +11,7 @@ const normalizarUid = (valor) =>
     .replace(/[^A-Z0-9]/g, '');
 
 export async function autenticarNFC(uid) {
+
   const uidNormalizado = normalizarUid(uid);
 
   if (!uidNormalizado) {
@@ -18,7 +19,9 @@ export async function autenticarNFC(uid) {
   }
 
   const cartoes = await prisma.cartao_operador.findMany({
-    where: { ativo: true },
+    where: {
+      ativo: true
+    },
     include: {
       usuario: {
         select: {
@@ -32,21 +35,11 @@ export async function autenticarNFC(uid) {
   });
 
   const cartao = cartoes.find(
-    item => normalizarUid(item.codigo_uid) === uidNormalizado
+    item =>
+      normalizarUid(item.codigo_uid) === uidNormalizado
   );
 
   if (!cartao) {
-    console.warn('Cartão NFC não encontrado', {
-      uid_recebido: uid,
-      uid_normalizado: uidNormalizado,
-      cartoes_ativos: cartoes.map(item => ({
-        id: item.id,
-        codigo_uid: item.codigo_uid,
-        codigo_uid_normalizado: normalizarUid(item.codigo_uid),
-        user_cpf: item.user_cpf
-      }))
-    });
-
     throw new Error('Cartão NFC não encontrado');
   }
 
@@ -56,7 +49,9 @@ export async function autenticarNFC(uid) {
       operador: cartao.user_cpf
     },
     JWT_SECRET,
-    { expiresIn: '10m' }
+    {
+      expiresIn: '10m'
+    }
   );
 
   return {
