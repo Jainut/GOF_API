@@ -230,7 +230,7 @@ router.get('/buscar/Usuario/:uid', auth, async (req, res) => {
       return res.status(400).json({ message: 'UID do cartão não informado' });
     }
 
-    const cartoes = await prisma.cartao_operador.findMany({
+    const cartoesAtivos = await prisma.cartao_operador.findMany({
       where: { ativo: true },
       include: {
         usuario: {
@@ -239,13 +239,31 @@ router.get('/buscar/Usuario/:uid', auth, async (req, res) => {
       }
     });
 
-    const cartao = cartoes.find(c => normalizarUid(c.codigo_uid) === uidNormalizado);
+    const cartao = cartoesAtivos.find(c => normalizarUid(c.codigo_uid) === uidNormalizado);
 
     if (!cartao) {
+      console.warn('Cartão NFC não encontrado', {
+        uid_recebido: uid,
+        uid_normalizado: uidNormalizado,
+        total_cartoes_ativos: cartoesAtivos.length,
+        cartoes_ativos_normalizados: cartoesAtivos.map(c => ({
+          id: c.id,
+          codigo_uid: c.codigo_uid,
+          codigo_uid_normalizado: normalizarUid(c.codigo_uid),
+          user_cpf: c.user_cpf,
+          usuario_nome: c.usuario?.nome
+        }))
+      });
+
       return res.status(404).json({
         message: 'Cartão não reconhecido ou inativo',
         uid_recebido: uid,
-        uid_normalizado: uidNormalizado
+        uid_normalizado: uidNormalizado,
+        total_cartoes_ativos: cartoesAtivos.length,
+        cartoes_ativos_normalizados: cartoesAtivos.slice(0, 10).map(c => ({
+          codigo_uid_normalizado: normalizarUid(c.codigo_uid),
+          user_cpf: c.user_cpf
+        }))
       });
     }
 
@@ -255,7 +273,6 @@ router.get('/buscar/Usuario/:uid', auth, async (req, res) => {
     return res.status(500).json({ message: 'Erro ao buscar usuário pelo cartão' });
   }
 });
-
 
 import jwt from 'jsonwebtoken';
 
