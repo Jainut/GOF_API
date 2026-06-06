@@ -221,6 +221,24 @@ router.get('/listar/Ativos', auth, async (req, res) => {
   }
 });
 
+router.get('/buscar/Usuario/:uid', auth, async (req, res) => {
+  const { uid } = req.params;
+  try {
+    const usuario = await prisma.usuario.findUnique({
+      where: { nfc_uid: uid },
+      select: { cpf: true, nome: true, setor: true, tipo: true }
+    });
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuário não encontrado para este cartão' });
+    }
+    return res.json(usuario);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro ao buscar usuário' });
+  }
+});
+
+
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET;
