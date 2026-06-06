@@ -223,18 +223,32 @@ router.get('/listar/Ativos', auth, async (req, res) => {
 
 router.get('/buscar/Usuario/:uid', auth, async (req, res) => {
   const { uid } = req.params;
+  const uidNormalizado = normalizarUid(uid);
+
   try {
-    const cartao = await prisma.cartao_operador.findFirst({
-      where: { codigo_uid: uid, ativo: true },
+    if (!uidNormalizado) {
+      return res.status(400).json({ message: 'UID do cartão não informado' });
+    }
+
+    const cartoes = await prisma.cartao_operador.findMany({
+      where: { ativo: true },
       include: {
         usuario: {
           select: { cpf: true, nome: true, setor: true, tipo: true }
         }
       }
     });
+
+    const cartao = cartoes.find(c => normalizarUid(c.codigo_uid) === uidNormalizado);
+
     if (!cartao) {
-      return res.status(404).json({ message: 'Cartão não reconhecido ou inativo' });
+      return res.status(404).json({
+        message: 'Cartão não reconhecido ou inativo',
+        uid_recebido: uid,
+        uid_normalizado: uidNormalizado
+      });
     }
+
     return res.json(cartao.usuario);
   } catch (error) {
     console.error(error);
