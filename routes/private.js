@@ -224,17 +224,21 @@ router.get('/listar/Ativos', auth, async (req, res) => {
 router.get('/buscar/Usuario/:uid', auth, async (req, res) => {
   const { uid } = req.params;
   try {
-    const usuario = await prisma.usuario.findUnique({
-      where: { nfc_uid: uid },
-      select: { cpf: true, nome: true, setor: true, tipo: true }
+    const cartao = await prisma.cartao_operador.findFirst({
+      where: { codigo_uid: uid, ativo: true },
+      include: {
+        usuario: {
+          select: { cpf: true, nome: true, setor: true, tipo: true }
+        }
+      }
     });
-    if (!usuario) {
-      return res.status(404).json({ message: 'Usuário não encontrado para este cartão' });
+    if (!cartao) {
+      return res.status(404).json({ message: 'Cartão não reconhecido ou inativo' });
     }
-    return res.json(usuario);
+    return res.json(cartao.usuario);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Erro ao buscar usuário' });
+    return res.status(500).json({ message: 'Erro ao buscar usuário pelo cartão' });
   }
 });
 
