@@ -38,6 +38,20 @@ app.get('/', (req, res) => {
     res.json({ message: 'Rodando...' });
 });
 
+const SELF_PING_URL = process.env.SELF_PING_URL || `http://localhost:${PORT}/`; // URL para o self-ping, usando a porta do servidor
+
+function selfPing() {
+    setInterval(async() => {
+        try{
+            const res = await fetch(SELF_PING_URL);
+            console.log(`Self-ping successful: ${res.status}`);
+        }catch(err){
+            console.log(`Self-ping failed: ${err.message}`);
+        }
+    }, 1000 * 60 * 10); // Ping a cada 60 segundos
+}
+
 server.listen(PORT, () => {
     console.log(`Ts is running, le'go 🖥️`); // Mostrando que ts (não é this shit eu juro) tá rodando e le'go né
+    selfPing(); // Iniciando o self-ping
 });
