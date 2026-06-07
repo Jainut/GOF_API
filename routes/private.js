@@ -123,45 +123,60 @@ router.get('/listar/Emprestimos', auth, async (req, res) => {
 
 router.get('/listar/Devolucoes', auth, async (req, res) => {
   try {
-    const devolucoes = await prisma.devolucao.findMany({
+const devolucoes = await prisma.devolucao.findMany({
+  select: {
+    id: true,
+    emprestimo_id: true,
+    status: true,
+    data_devolucao: true,
+    usuario: {
       select: {
-        id: true,
-        emprestimo_id: true,
-        status: true,
-        data_devolucao: true,
-        usuario: {
+        nome: true,
+        tipo: true,
+        setor: true
+      }
+    },
+    emprestimo: {
+      select: {
+        // CORREÇÃO: Passando pelos itens do empréstimo primeiro
+        item_emprestimo: {
           select: {
-            nome: true,
-            tipo: true,
-            setor: true
-          }
-        },
-        ferramenta: {
-          select: {
-            tipo: true
+            ferramenta: {
+              select: {
+                tipo: true
+              }
+            }
           }
         }
       }
-    });
+    }
+  }
+});
 
-    const devMapeado = devolucoes.map(dev => ({
-      devolucao_id: dev.id,
-      emprestimo_id: dev.emprestimo_id,
-      status: dev.status,
-      data_devolucao: dev.data_devolucao,
-      tipo_ferramenta: dev.ferramenta.tipo,
-      setor_usuario: dev.usuario.setor,
-      nome_usuario: dev.usuario.nome,
-      tipo_usuario: dev.usuario.tipo
-    }));
+const resultado = devolucoes.map(dev => {
+  const tiposArray = dev.emprestimo?.item_emprestimo?.map(item => item.ferramenta?.tipo) || [];
+  const tiposUnicos = [...new Set(tiposArray)].filter(Boolean).join(', ');
 
-    res.json(devMapeado);
+  return {
+    devolucao_id: dev.id,
+    emprestimo_id: dev.emprestimo_id,
+    status: dev.status,
+    data_devolucao: dev.data_devolucao,
+    // Se vier vazio, coloca 'Desconhecido'
+    tipo_ferramenta: tiposUnicos || 'Desconhecido',
+    setor_usuario: dev.usuario?.setor || 'N/A',
+    nome_usuario: dev.usuario?.nome || 'N/A',
+    tipo_usuario: dev.usuario?.tipo || 'N/A'
+  };
+});
+
+    res.json(resultado);
 
   } catch (error) {
     console.error(error);
 
     res.status(500).json({
-      message: 'Erro ao listar devoluções'
+      message: 'Erro ao listar devoluções',
     });
   }
 });
