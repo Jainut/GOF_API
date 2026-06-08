@@ -277,7 +277,47 @@ router.get('/buscar/Usuario/:uid', auth, async (req, res) => {
   }
 });
 
+// Cadastrar usuário
+router.post('/cadastrar/Usuario', auth, async (req, res) => {
+  const { cpf, nome, senha, tipo, setor } = req.body;
+  // bcrypt na senha antes de salvar
+  const hash = await bcrypt.hash(senha, 10);
+  const user = await prisma.usuario.create({
+    data: { cpf, nome, senha: hash, tipo, setor }
+  });
+  res.status(201).json(user);
+});
 
+// Listar usuários (com info de cartão)
+router.get('/listar/Usuarios', auth, async (req, res) => {
+  const users = await prisma.usuario.findMany({
+    include: { cartao_operador: { select: { codigo_uid: true, ativo: true } } }
+  });
+  res.json(users);
+});
+
+// Listar cartões NFC (com nome do usuário)
+router.get('/listar/CartoesNFC', auth, async (req, res) => {
+  const cartoes = await prisma.cartao_operador.findMany({
+    include: { usuario: { select: { nome: true } } }
+  });
+  res.json(cartoes);
+});
+
+// Vincular cartão NFC
+router.post('/cadastrar/CartaoNFC', auth, async (req, res) => {
+  const { user_cpf, codigo_uid } = req.body;
+  const cartao = await prisma.cartao_operador.create({
+    data: { user_cpf, codigo_uid, ativo: true }
+  });
+  res.status(201).json(cartao);
+});
+
+// Remover cartão NFC
+router.delete('/remover/CartaoNFC/:user_cpf', auth, async (req, res) => {
+  await prisma.cartao_operador.delete({ where: { user_cpf: req.params.user_cpf } });
+  res.json({ message: 'Cartão removido.' });
+});
 
 
 import jwt from 'jsonwebtoken';
