@@ -1,5 +1,6 @@
 import express from 'express'; // Importando a tal da bibliotaca principal
 import { PrismaClient } from '@prisma/client'; // Importando o Prisma Client pra usar o banco de dados, porque a gente é moderno e usa ORM
+import bcrypt from 'bcrypt';
 
 import auth from '../middlewares/auth.js';
 
