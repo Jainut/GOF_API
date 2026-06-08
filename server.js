@@ -20,8 +20,8 @@ const server = http.createServer(app);
 const io = new Server(server,{
 
     cors:{
-        origin:["http://localhost:5173", "https://rastreabilidadegof.vercel.app/"],
-
+        origin:"https://rastreabilidadegof.vercel.app",
+        methods: ["GET", "POST"],
         credentials:true
     }
 
