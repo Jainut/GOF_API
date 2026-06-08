@@ -36,28 +36,49 @@ router.post('/registrar/Usuario', async (req, res) => { // Rota de registro de u
   }
 });
 
-router.post('/login', async (req, res) => { // Rota de login, porque a gente precisa de segurança né
+router.post('/login/almoxarife', async (req, res) => {
   const userInfo = req.body;
-
   try {
     const user = await prisma.usuario.findUnique({
       where: { cpf: userInfo.cpf },
     });
-
     if (!user) {
       return res.status(404).json({ message: 'Usuário não encontrado' });
     }
-
-    const isMatch = await bcrypt.compare(userInfo.senha, user.senha); // Comparando a senha fornecida com a senha hasheada no banco
-
+    if (user.tipo !== 'ALMOXARIFE') {
+      return res.status(403).json({ message: 'Acesso negado: usuário não é almoxarife' });
+    }
+    const isMatch = await bcrypt.compare(userInfo.senha, user.senha);
     if (!isMatch) {
       return res.status(401).json({ message: 'Senha incorreta' });
     }
-
-    // Gerar o token JWT
     const token = jwt.sign({ cpf: user.cpf, nome: user.nome, tipo: user.tipo }, JWT_SECRET, { expiresIn: '1d' });
-    res.cookie('token', token, { httpOnly: true, sameSite: 'lax', maxAge: 24*60*60*1000 }); // Criando um token com as informações do usuário e a chave secreta, expira em 1 hora
+    res.cookie('token', token, { httpOnly: true, sameSite: 'lax', maxAge: 24*60*60*1000 });
+    return res.status(200).json({ message: 'Login realizado com sucesso', token });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro ao realizar login' });
+  }
+});
 
+router.post('/login/admin', async (req, res) => {
+  const userInfo = req.body;
+  try {
+    const user = await prisma.usuario.findUnique({
+      where: { cpf: userInfo.cpf },
+    });
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+    if (user.tipo !== 'ADMIN') {
+      return res.status(403).json({ message: 'Acesso negado: usuário não é administrador' });
+    }
+    const isMatch = await bcrypt.compare(userInfo.senha, user.senha);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Senha incorreta' });
+    }
+    const token = jwt.sign({ cpf: user.cpf, nome: user.nome, tipo: user.tipo }, JWT_SECRET, { expiresIn: '1d' });
+    res.cookie('token', token, { httpOnly: true, sameSite: 'lax', maxAge: 24*60*60*1000 });
     return res.status(200).json({ message: 'Login realizado com sucesso', token });
   } catch (error) {
     console.error(error);
