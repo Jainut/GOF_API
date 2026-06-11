@@ -27,7 +27,7 @@ router.post('/login/almoxarife', async (req, res) => {
       return res.status(401).json({ message: 'Senha incorreta' });
     }
     const token = jwt.sign({ cpf: user.cpf, nome: user.nome, tipo: user.tipo }, JWT_SECRET, { expiresIn: '1d' });
-    res.cookie('token', token, { httpOnly: true, sameSite: 'none', maxAge: 24*60*60*1000 });
+    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 24*60*60*1000 });
     return res.status(200).json({ message: 'Login realizado com sucesso'});
   } catch (error) {
     console.error(error);
@@ -52,7 +52,7 @@ router.post('/login/admin', async (req, res) => {
       return res.status(401).json({ message: 'Senha incorreta' });
     }
     const token = jwt.sign({ cpf: user.cpf, nome: user.nome, tipo: user.tipo }, JWT_SECRET, { expiresIn: '1d' });
-    res.cookie('token', token, { httpOnly: true, sameSite: 'none', maxAge: 24*60*60*1000 });
+    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 24*60*60*1000 });
     return res.status(200).json({ message: 'Login realizado com sucesso'});
   } catch (error) {
     console.error(error);
