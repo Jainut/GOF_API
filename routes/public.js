@@ -10,32 +10,6 @@ const JWT_SECRET = process.env.JWT_SECRET ; // Pegando a chave secreta do ambien
 const router = express.Router(); // Usando só o básico pra criar rota mesmo
 const prisma = new PrismaClient(); // Criando uma instância do Prisma Client pra usar depois
 
-router.post('/registrar/Usuario', async (req, res) => { // Rota de registro de usuário porque nós é bom mai num é bombom
-  const usuario = req.body;
-
-  const salt = await bcrypt.genSalt(10); // Gerando um salt pra hashear a senha, porque segurança é importante mesmo que seja só um projeto do senai né lobato
-
-  const hashedPassword = await bcrypt.hash(usuario.senha, salt); // Hasheando a senha do usuário com o salt gerado, porque a gente não quer senha em texto puro no banco de dados né lobato
-
-  try {
-    const newUsuario = await prisma.usuario.create({
-      data: {
-        cpf: usuario.cpf,
-        nome: usuario.nome,
-        tipo: usuario.tipo,
-        setor: usuario.setor,
-        senha: hashedPassword, // Guardando a senha hasheada no banco de dados, porque a gente é responsável e não quer deixar senha em texto puro por aí né lobato
-      }
-    });
-
-    return res.status(201).json({ message: 'Usuário registrado com sucesso' });
-
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Erro ao registrar usuário' });
-  }
-});
-
 router.post('/login/almoxarife', async (req, res) => {
   const userInfo = req.body;
   try {
@@ -54,7 +28,7 @@ router.post('/login/almoxarife', async (req, res) => {
     }
     const token = jwt.sign({ cpf: user.cpf, nome: user.nome, tipo: user.tipo }, JWT_SECRET, { expiresIn: '1d' });
     res.cookie('token', token, { httpOnly: true, sameSite: 'lax', maxAge: 24*60*60*1000 });
-    return res.status(200).json({ message: 'Login realizado com sucesso', token });
+    return res.status(200).json({ message: 'Login realizado com sucesso'});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Erro ao realizar login' });
@@ -79,7 +53,7 @@ router.post('/login/admin', async (req, res) => {
     }
     const token = jwt.sign({ cpf: user.cpf, nome: user.nome, tipo: user.tipo }, JWT_SECRET, { expiresIn: '1d' });
     res.cookie('token', token, { httpOnly: true, sameSite: 'lax', maxAge: 24*60*60*1000 });
-    return res.status(200).json({ message: 'Login realizado com sucesso', token });
+    return res.status(200).json({ message: 'Login realizado com sucesso'});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Erro ao realizar login' });
