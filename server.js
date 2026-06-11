@@ -7,11 +7,10 @@ import privateRouter from "./routes/private.js"
 import iniciarMQTT from "./mqtthandler.js";
 import cookieParser from 'cookie-parser';
 
-app.use(cookieParser());
-
 import auth from "./middlewares/auth.js"
 
 const app = express(); // Usando o express todinho
+app.use(cookieParser());
 
 app.use(cors({
     origin: true,
