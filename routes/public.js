@@ -27,7 +27,7 @@ router.post('/login/almoxarife', async (req, res) => {
       return res.status(401).json({ message: 'Senha incorreta' });
     }
     const token = jwt.sign({ cpf: user.cpf, nome: user.nome, tipo: user.tipo }, JWT_SECRET, { expiresIn: '1d' });
-    res.cookie('token', token, { httpOnly: true, sameSite: 'lax', maxAge: 24*60*60*1000 });
+    res.cookie('token', token, { httpOnly: true, sameSite: 'none', maxAge: 24*60*60*1000 });
     return res.status(200).json({ message: 'Login realizado com sucesso'});
   } catch (error) {
     console.error(error);
@@ -52,7 +52,7 @@ router.post('/login/admin', async (req, res) => {
       return res.status(401).json({ message: 'Senha incorreta' });
     }
     const token = jwt.sign({ cpf: user.cpf, nome: user.nome, tipo: user.tipo }, JWT_SECRET, { expiresIn: '1d' });
-    res.cookie('token', token, { httpOnly: true, sameSite: 'lax', maxAge: 24*60*60*1000 });
+    res.cookie('token', token, { httpOnly: true, sameSite: 'none', maxAge: 24*60*60*1000 });
     return res.status(200).json({ message: 'Login realizado com sucesso'});
   } catch (error) {
     console.error(error);
@@ -70,7 +70,7 @@ router.post('/login/NFC', async (req, res) => {
       return res.status(401).json({ message: 'Cartão NFC inválido'});
     }
 
-    res.cookie('token', resultado.token, { httpOnly: true, sameSite: 'lax', maxAge: 5*60*1000 }); // Guardando o token nos cookies ao invés de local storage
+    res.cookie('token', resultado.token, { httpOnly: true, sameSite: 'none', maxAge: 5*60*1000 }); // Guardando o token nos cookies ao invés de local storage
 
     return res.status(200).json({ message: 'Usuário autenticado com sucesso' });
   } catch (error) {
