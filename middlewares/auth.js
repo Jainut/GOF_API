@@ -8,10 +8,9 @@ export default function auth(
     next
 ){
 
-    const authHeader=
-    req.headers.authorization;
+    const token=req.cookies.token;
 
-    if(!authHeader){
+    if(!token){
 
         return res.status(401).json({
             message:
@@ -19,12 +18,6 @@ export default function auth(
         });
 
     }
-
-    const token=
-    authHeader.replace(
-        'Bearer ',
-        ''
-    );
 
     try{
 

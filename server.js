@@ -5,6 +5,9 @@ import { Server } from "socket.io";
 import publicRouter from "./routes/public.js"; // Importando é tudo fi
 import privateRouter from "./routes/private.js"
 import iniciarMQTT from "./mqtthandler.js";
+import cookieParser from 'cookie-parser';
+
+app.use(cookieParser());
 
 import auth from "./middlewares/auth.js"
 
