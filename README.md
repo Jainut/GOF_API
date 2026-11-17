@@ -1,91 +1,92 @@
-# Visalay API
+# GOF API
 
-API para controle de empréstimos e devoluções de ferramentas em ambiente industrial. O projeto gerencia usuários, cartões NFC, ferramentas e estoque, além de integrar leitores NFC via MQTT e notificar o cliente em tempo real por Socket.IO.
+REST API for tracking tool checkouts, returns, and inventory in industrial storerooms. It manages users, NFC cards, and tools, receives card reads over MQTT, and sends real-time updates to the React interface via Socket.IO.
 
-## Demonstração
+## Demo
 
-**[Abrir a demo no navegador](https://jainut.github.io/GOF_Interface/)**
+**[Try the interactive demo (in Portuguese)](https://jainut.github.io/GOF_Interface/)**
 
-Registre uma retirada ou devolução na [interface React](https://github.com/Jainut/GOF_Interface) e abra **Eventos e API simulada** para ver as rotas HTTP, os exemplos de respostas JSON e o evento NFC. A demo reproduz essas interações no navegador com dados fictícios.
+Check out or return a tool in the [React interface](https://github.com/Jainut/GOF_Interface), then open **Eventos e API simulada** to inspect the HTTP routes, sample JSON responses, and the NFC event. The demo simulates these interactions in the browser using fictional data.
 
-## Tecnologias
+## Tech stack
 
-- Node.js com Express 5
-- PostgreSQL e Prisma ORM
-- JWT em cookies HTTP-only
-- bcrypt para senhas
-- MQTT (HiveMQ) para leituras NFC
-- Socket.IO para eventos em tempo real
+- Node.js with Express 5
+- PostgreSQL and Prisma ORM
+- JWT in HttpOnly cookies
+- bcrypt for password hashing
+- MQTT (HiveMQ) for NFC card reads
+- Socket.IO for real-time events
 
-## Pré-requisitos
+## Prerequisites
 
-- Node.js 18 ou superior
-- Uma instância PostgreSQL acessível
+- Node.js 18 or later
+- An accessible PostgreSQL database
 
-## Configuração
+## Local setup
 
-1. Instale as dependências:
+1. Install the dependencies.
 
    ```bash
    npm install
    ```
 
-2. Crie um arquivo `.env` na raiz do projeto:
+2. Create a `.env` file in the project root.
 
    ```env
-   DATABASE_URL="postgresql://USUARIO:SENHA@HOST:5432/BANCO"
-   JWT_SECRET="uma-chave-secreta-forte"
+   DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE"
+   JWT_SECRET="your-strong-secret-key"
    PORT=3000
-   # Opcional: URL usada pelo ping periódico da própria API
+   # Optional URL for the API's periodic self-ping
    SELF_PING_URL="http://localhost:3000/"
    ```
 
-3. Gere o cliente do Prisma e aplique o esquema ao banco:
+3. Generate the Prisma client and apply the schema to the database.
 
    ```bash
    npx prisma generate
    npx prisma db push
    ```
 
-4. Inicie a API:
+4. Start the API.
 
    ```bash
    node server.js
    ```
 
-A API fica disponível em `http://localhost:3000` por padrão. O endpoint `GET /` responde com uma confirmação de que o serviço está em execução.
+The API runs at `http://localhost:3000` by default. Send a `GET /` request to check whether it is running.
 
-## Autenticação
+## Authentication
 
-Os logins gravam um JWT no cookie `token`. As rotas protegidas exigem esse cookie; em aplicações web, envie a requisição com credenciais, por exemplo `credentials: 'include'` no `fetch`.
+The login routes set a JWT in the `token` cookie. Protected routes require this cookie. When calling the API from a web client, include credentials with `credentials: 'include'` in `fetch`.
 
-| Método | Rota | Corpo da requisição |
+| Method | Route | Request body |
 | --- | --- | --- |
 | `POST` | `/login/almoxarife` | `{ "cpf": "...", "senha": "..." }` |
 | `POST` | `/login/admin` | `{ "cpf": "...", "senha": "..." }` |
 | `POST` | `/login/NFC` | `{ "uid": "..." }` |
 
-## Endpoints protegidos
+## Protected endpoints
 
-| Método | Rota | Descrição |
+| Method | Route | Description |
 | --- | --- | --- |
-| `POST` | `/registrar/Emprestimo` | Registra um empréstimo e seus itens. |
-| `POST` | `/registrar/Devolucao` | Registra a devolução de um empréstimo. |
-| `GET` | `/listar/Emprestimos` | Lista todos os empréstimos com usuário e ferramentas. |
-| `GET` | `/listar/Devolucoes` | Lista as devoluções registradas. |
-| `GET` | `/listar/Ferramentas` | Lista ferramentas e informações de estoque. |
-| `GET` | `/listar/Ativos` | Lista empréstimos que ainda não possuem devolução. |
-| `GET` | `/buscar/Usuario/:uid` | Busca o usuário de um cartão NFC ativo. |
-| `POST` | `/cadastrar/Usuario` | Cadastra um usuário. |
-| `GET` | `/listar/Usuarios` | Lista usuários e seus cartões NFC. |
-| `GET` | `/listar/CartoesNFC` | Lista cartões NFC vinculados. |
-| `POST` | `/cadastrar/CartaoNFC` | Vincula um cartão NFC a um usuário. |
-| `DELETE` | `/remover/CartaoNFC/:user_cpf` | Remove o cartão vinculado a um CPF. |
+| `POST` | `/registrar/Emprestimo` | Records a checkout and its line items. |
+| `POST` | `/registrar/Devolucao` | Records the return of a checkout. |
+| `GET` | `/listar/Emprestimos` | Lists all checkouts with their users and tools. |
+| `GET` | `/listar/Devolucoes` | Lists recorded returns. |
+| `GET` | `/listar/Ferramentas` | Lists tools and inventory details. |
+| `GET` | `/listar/Ativos` | Lists checkouts that are still open. |
+| `GET` | `/buscar/Usuario/:uid` | Retrieves the user linked to an active NFC card. |
+| `POST` | `/cadastrar/Usuario` | Creates a user. |
+| `GET` | `/listar/Usuarios` | Lists users and their NFC cards. |
+| `GET` | `/listar/CartoesNFC` | Lists linked NFC cards. |
+| `POST` | `/cadastrar/CartaoNFC` | Links an NFC card to a user. |
+| `DELETE` | `/remover/CartaoNFC/:user_cpf` | Removes the card linked to the specified CPF. |
 
-### Exemplos de corpos
+### Example request bodies
+
+#### `POST /registrar/Emprestimo`
 
 ```json
-// POST /registrar/Emprestimo
 {
   "user_cpf": "12345678901",
   "ferramentas": [
@@ -94,49 +95,51 @@ Os logins gravam um JWT no cookie `token`. As rotas protegidas exigem esse cooki
 }
 ```
 
+#### `POST /registrar/Devolucao`
+
 ```json
-// POST /registrar/Devolucao
 {
   "emprestimo_id": 1,
   "user_cpf": "12345678901"
 }
 ```
 
+#### `POST /cadastrar/Usuario`
+
 ```json
-// POST /cadastrar/Usuario
 {
   "cpf": "12345678901",
-  "nome": "Nome do usuário",
-  "senha": "senha-segura",
+  "nome": "Example User",
+  "senha": "example-password",
   "tipo": "OPERADOR",
   "setor": "MONTAGEM"
 }
 ```
 
-Os tipos de usuário disponíveis são `ALMOXARIFE`, `OPERADOR` e `ADMIN`. Os setores aceitos estão definidos no esquema Prisma em [`prisma/schema.prisma`](prisma/schema.prisma).
+Supported user roles are `ALMOXARIFE`, `OPERADOR`, and `ADMIN`. See the [Prisma schema](prisma/schema.prisma) for supported departments.
 
-## NFC, MQTT e Socket.IO
+## NFC, MQTT, and Socket.IO
 
-Ao iniciar, a API se conecta ao broker público `mqtt://broker.hivemq.com:1883` e assina o tópico `gof/nfc/request`.
+On startup, the API connects to the public broker at `mqtt://broker.hivemq.com:1883` and subscribes to `gof/nfc/request`.
 
-- Envie uma mensagem JSON como `{ "uid": "SEU_UID" }` para `gof/nfc/request`.
-- A API responde em `gof/nfc/response` com `PERMITIDO` quando o cartão é válido ou `ERRO` quando a leitura não pode ser autenticada.
-- Em uma autenticação válida, o servidor emite o evento Socket.IO `nfcAuth` com o UID e os dados do operador.
+- Publish a JSON message such as `{ "uid": "YOUR_CARD_UID" }` to `gof/nfc/request`.
+- The API responds on `gof/nfc/response` with `PERMITIDO` if the card is valid or `ERRO` if authentication fails.
+- After successful authentication, the server emits the Socket.IO event `nfcAuth` with the card UID and operator details.
 
-## Estrutura
+## Project structure
 
 ```text
-├── middlewares/       # Validação do JWT
-├── prisma/            # Esquema do banco de dados
-├── routes/            # Rotas públicas e protegidas
-├── services/          # Autenticação de cartões NFC
-├── mqtthandler.js     # Integração com o broker MQTT
-└── server.js          # Inicialização HTTP e Socket.IO
+├── middlewares/       # JWT validation
+├── prisma/            # Database schema
+├── routes/            # Public and protected routes
+├── services/          # NFC card authentication
+├── mqtthandler.js     # MQTT broker integration
+└── server.js          # HTTP and Socket.IO startup
 ```
 
-## Banco de dados
+## Database
 
-O modelo de dados está em [`prisma/schema.prisma`](prisma/schema.prisma), incluindo usuários, cartões, ferramentas, estoque, empréstimos e devoluções. Use o Prisma Studio para inspecionar os dados localmente:
+The [Prisma schema](prisma/schema.prisma) defines users, cards, tools, inventory, checkouts, and returns. Use Prisma Studio to inspect the data locally.
 
 ```bash
 npx prisma studio
