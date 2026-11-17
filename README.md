@@ -2,6 +2,12 @@
 
 API para controle de empréstimos e devoluções de ferramentas em ambiente industrial. O projeto gerencia usuários, cartões NFC, ferramentas e estoque, além de integrar leitores NFC via MQTT e notificar o cliente em tempo real por Socket.IO.
 
+## Demonstração
+
+**[Abrir a demo no navegador](https://jainut.github.io/GOF_Interface/)**
+
+Registre uma retirada ou devolução na [interface React](https://github.com/Jainut/GOF_Interface) e abra **Eventos e API simulada** para ver as rotas HTTP, os exemplos de respostas JSON e o evento NFC. A demo reproduz essas interações no navegador com dados fictícios.
+
 ## Tecnologias
 
 - Node.js com Express 5
